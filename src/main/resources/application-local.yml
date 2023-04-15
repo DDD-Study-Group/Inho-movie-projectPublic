@@ -1,0 +1,14 @@
+spring:
+  config:
+    import: 
+      - classpath:/application-default.yml
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+  h2:
+    console:
+      enabled: true
+test:
+  value: "Load dev phase"
