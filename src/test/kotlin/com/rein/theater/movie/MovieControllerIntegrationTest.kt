@@ -3,10 +3,8 @@ package com.rein.theater.movie
 import com.google.gson.Gson
 import com.rein.theater.movie.view.MovieCreateRequest
 import com.rein.theater.support.IntegrationTest
-import org.junit.Test
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.json.GsonTester
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
