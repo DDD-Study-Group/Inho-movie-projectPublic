@@ -28,7 +28,7 @@ class DiscountControllerExceptionHandler {
     }
 
     @ExceptionHandler(AlreadyCreatedDiscountException::class)
-    fun constraintViolationException(acde: AlreadyCreatedDiscountException): ResponseEntity<*> {
+    fun alreadyCreatedDiscountException(acde: AlreadyCreatedDiscountException): ResponseEntity<*> {
         return ResponseEntity.status(HttpStatus.CONFLICT).build<Any>()
     }
 
