@@ -1,3 +1,5 @@
 package com.rein.theater.screening.view
 
-class ScreeningScheduleResponse()
+class ScheduleByMovieResponse {
+
+}
