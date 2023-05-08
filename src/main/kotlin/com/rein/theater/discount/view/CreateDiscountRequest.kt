@@ -1,5 +1,6 @@
 package com.rein.theater.discount.view
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.rein.theater.discount.domain.*
@@ -9,10 +10,10 @@ import java.time.LocalDate
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 
-data class CreateDiscountRequest (
-    @JsonProperty("discountCondition") 
+data class CreateDiscountRequest @JsonCreator constructor(
+    @field: JsonProperty("discountCondition", required = true) 
     val discountCondition: DiscountConditionRequest,
-    @JsonProperty("discountPolicy") 
+    @field: JsonProperty("discountPolicy", required = true) 
     val discountPolicy: DiscountPolicyRequest
 ) {
     fun discount(): Discount = Discount(
@@ -21,23 +22,23 @@ data class CreateDiscountRequest (
     )
 }
 
-data class DiscountConditionRequest (
-    @JsonProperty("date", required = true) 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd", timezone = "UTC")
+data class DiscountConditionRequest @JsonCreator constructor(
+    @field: JsonProperty("date", required = true)
+    @field: JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd", timezone = "UTC")
     val date: LocalDate?,
-    @JsonProperty("order", required = true) 
+    @field: JsonProperty("order", required = true) 
     val order: Int? = null
 )
 
-data class DiscountPolicyRequest (
-    @JsonProperty("percent") 
+data class DiscountPolicyRequest @JsonCreator constructor(
+    @field: JsonProperty("percent")
     @field: Min(1) @field: Max(100) 
     val percent: PercentRequest?,
-    @JsonProperty("amount") 
+    @field: JsonProperty("amount") 
     @field: Min(1000L) 
     val amount: AmountRequest?
 ) {
-    fun create(): DiscountPolicy = 
+    fun create(): Policy = 
         if (percent != null) PercentPolicy(Percent(percent.value))
         else if (amount != null) AmountPolicy(Won(amount.value))
         else throw IllegalArgumentException("Percent or amount must be exist. percent=$percent, amount=$amount")

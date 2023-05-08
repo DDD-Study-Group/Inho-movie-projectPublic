@@ -19,8 +19,8 @@ class DiscountController {
     
     @PostMapping(path = [""])
     fun create(@Valid @RequestBody request: CreateDiscountRequest): ResponseEntity<Any> {
-        service.create(request.discount())
-        return ResponseEntity.created(URI("")).build()
+        val discount = service.create(request.discount())
+        return ResponseEntity.created(URI("/discount/${discount.id()}")).build()
     }
     
     @GetMapping()

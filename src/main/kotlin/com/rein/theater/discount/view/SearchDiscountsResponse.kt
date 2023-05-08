@@ -2,7 +2,7 @@ package com.rein.theater.discount.view
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.rein.theater.discount.application.domain.Discounts
-import com.rein.theater.discount.domain.DiscountPolicy
+import com.rein.theater.discount.domain.Policy
 import java.time.LocalDate
 
 class SearchDiscountsResponse {
@@ -33,5 +33,5 @@ class SearchDiscountPolicyResponse constructor(
     @field: JsonProperty("id") val id: String,
     @field: JsonProperty("value") val value: Number
 ) {
-    constructor(policy: DiscountPolicy) : this(policy.id().name, policy.value())
+    constructor(policy: Policy) : this(policy.id().name, policy.value())
 }
