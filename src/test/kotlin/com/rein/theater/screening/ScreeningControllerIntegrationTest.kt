@@ -2,7 +2,7 @@ package com.rein.theater.screening
 
 import com.google.gson.*
 import com.ninjasquad.springmockk.MockkBean
-import com.rein.theater.discount.domain.value.Won
+import com.rein.theater.movie.domain.PlayTime
 import com.rein.theater.screening.application.RegistScreeningService
 import com.rein.theater.screening.application.SearchScreeningService
 import com.rein.theater.screening.domain.AlreadyRegisteredScreeningException
@@ -18,7 +18,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
@@ -27,7 +26,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.lang.reflect.Type
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Stream
@@ -84,7 +82,7 @@ class ScreeningControllerIntegrationTest : IntegrationTest() {
     @Test
     fun searchByDate() {
         val schedule = listOf(
-            Screening("A", LocalTime.of(13, 10, 0), LocalTime.of(13, 10, 0).plusMinutes(300), 100, Won(13000))
+            Screening("A", NOW.plusDays(3), PlayTime.minutes(300), 100, 13000)
         )
         every { scheduler.scheduleOn(any()) } returns ScreeningSchedule(schedule.toSet())
         
@@ -93,9 +91,9 @@ class ScreeningControllerIntegrationTest : IntegrationTest() {
             .andExpect(jsonPath("$.date", equalTo("20230506")))
             .andExpect(jsonPath("$.schedule.length()", equalTo(1)))
             .andExpect(jsonPath("$.schedule[0].order", equalTo(1)))
-            .andExpect(jsonPath("$.schedule[0].title", equalTo(schedule[0].title)))
-            .andExpect(jsonPath("$.schedule[0].startAt", equalTo(schedule[0].startAt.format(DateTimeFormatter.ofPattern("HH:mm:ss")))))
-            .andExpect(jsonPath("$.schedule[0].endAt", equalTo(schedule[0].endAt.format(DateTimeFormatter.ofPattern("HH:mm:ss")))))
+            .andExpect(jsonPath("$.schedule[0].title", equalTo(schedule[0].title())))
+            .andExpect(jsonPath("$.schedule[0].startAt", equalTo(schedule[0].startAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))))
+            .andExpect(jsonPath("$.schedule[0].endAt", equalTo(schedule[0].endAt().format(DateTimeFormatter.ofPattern("HH:mm:ss")))))
             .andExpect(jsonPath("$.schedule[0].ticketCount", equalTo(schedule[0].ticketCount)))
             .andDo(MockMvcResultHandlers.print())
     }
@@ -110,7 +108,7 @@ class ScreeningControllerIntegrationTest : IntegrationTest() {
             .andDo(MockMvcResultHandlers.print())
     }
 
-    @DisplayName("영화별 상영 시간표를 조회할 수 있다.")
+   /* @DisplayName("영화별 상영 시간표를 조회할 수 있다.")
     @Test
     fun searchByMovie() {
         TODO("Not yet implemented")
@@ -121,7 +119,7 @@ class ScreeningControllerIntegrationTest : IntegrationTest() {
     fun searchByMovie_when_does_not_exist() {
         TODO("Not yet implemented")
     }
-    
+ */   
     companion object {
         private const val BASE_URL = "/screening"
         private val DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")

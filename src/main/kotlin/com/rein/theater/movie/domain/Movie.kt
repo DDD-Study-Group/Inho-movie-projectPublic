@@ -15,4 +15,8 @@ class Movie constructor(val title: String, val time: PlayTime) {
     override fun hashCode(): Int = Objects.hash(title)
 }
 
-data class PlayTime(val time: Int, val unit: TimeUnit = TimeUnit.MINUTES)
+data class PlayTime(val time: Int, val unit: TimeUnit = TimeUnit.MINUTES) {
+    companion object {
+        fun minutes(minutes: Int): PlayTime = PlayTime(minutes, TimeUnit.MINUTES)
+    }
+}

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.rein.theater.screening.domain.Screening
 import com.rein.theater.screening.domain.ScreeningSchedule
-import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -23,15 +22,15 @@ class DailyScheduleResponse {
 class SearchScreeningResponse {
     @JsonProperty("order") val order: Int
     @JsonProperty("title") val title: String
-    @JsonProperty("startAt") @DateTimeFormat(pattern = "HH:mm:ss") val startAt: LocalTime
-    @JsonProperty("endAt") @DateTimeFormat(pattern = "HH:mm:ss") val endAt: LocalTime
+    @JsonProperty("startAt") @JsonFormat(pattern = "HH:mm:ss") val startAt: LocalTime
+    @JsonProperty("endAt") @JsonFormat(pattern = "HH:mm:ss") val endAt: LocalTime
     @JsonProperty("ticketCount") val ticketCount: Int
     
     constructor(order: Int, screening: Screening) {
         this.order = order
-        this.title = screening.title
-        this.startAt = screening.startAt
-        this.endAt = screening.endAt
+        this.title = screening.title()
+        this.startAt = screening.startAt()
+        this.endAt = screening.endAt()
         this.ticketCount = screening.ticketCount
     }
 }

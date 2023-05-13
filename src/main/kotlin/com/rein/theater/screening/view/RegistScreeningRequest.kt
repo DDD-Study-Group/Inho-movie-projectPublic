@@ -15,8 +15,8 @@ data class RegistScreeningRequest @JsonCreator constructor(
     val startAt: LocalDateTime,
     
     @JsonProperty("price", required = true) @Min(1000) 
-    val price: Long,
+    val price: Int,
     
     @JsonProperty("ticketCount", required = true) @Min(1) 
-    val ticketCount: Long
+    val ticketCount: Int
 )
