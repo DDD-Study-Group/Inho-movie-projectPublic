@@ -4,19 +4,22 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class AlreadyRegisteredScreeningException(dateTime: LocalDateTime) : RuntimeException(
-    "Already a screening registered. dateTime=${
-        dateTime.format(
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-        )
-    }"
-)
+class AlreadyRegisteredScreeningException : RuntimeException {
+    constructor(dateTime: LocalDateTime) : super(
+        "Already a screening registered. dateTime=${
+            dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+        }"
+    )
+    
+    constructor(id: ID) : super("Already a screening registered. id=$id")
+}
+    
 
 abstract class InvalidScreeningArgumentException(message: String) : IllegalArgumentException(message)
 
 class InvalidStartAtException(startAt: LocalDateTime) : InvalidScreeningArgumentException("Invalid startAt. startAt=$startAt")
 
-class InvalidEndAtException(startAt: LocalTime, endAt: LocalTime) : InvalidScreeningArgumentException("Invalid endAt. startAt=$startAt, endAt=$endAt")
+class InvalidEndAtException(startAt: LocalDateTime, endAt: LocalDateTime) : InvalidScreeningArgumentException("Invalid endAt. startAt=$startAt, endAt=$endAt")
 
 class InvalidTitleException(title: String) : InvalidScreeningArgumentException("Invalid movie title. title=$title")
 

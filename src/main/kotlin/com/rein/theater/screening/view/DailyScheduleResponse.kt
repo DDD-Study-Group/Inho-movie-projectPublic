@@ -29,8 +29,8 @@ class SearchScreeningResponse {
     constructor(order: Int, screening: Screening) {
         this.order = order
         this.title = screening.title()
-        this.startAt = screening.startAt()
-        this.endAt = screening.endAt()
+        this.startAt = screening.startAt().toLocalTime()
+        this.endAt = screening.endAt().toLocalTime()
         this.ticketCount = screening.ticketCount
     }
 }

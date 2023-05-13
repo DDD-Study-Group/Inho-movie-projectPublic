@@ -6,14 +6,8 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.concurrent.TimeUnit
 
-/*class Screening(val title: String, val startAt: LocalTime, val endAt: LocalTime, val ticketCount: Int, val reserveAmount: Won) {
-    constructor(title: String, startAt: LocalDateTime, playTime: PlayTime, ticketCount: Int, price: Int) : this(
-        title, startAt.toLocalTime(), startAt.toLocalTime() + playTime, ticketCount, Won(price)
-    )
-}*/
-
 class Screening {
-    private val id: ID
+    val id: ID
     val ticketCount: Int
     private val price: Won
     
@@ -33,9 +27,9 @@ class Screening {
 
     fun title(): String = id.title
     
-    fun startAt(): LocalTime = id.startAt
+    fun startAt(): LocalDateTime = id.startAt
     
-    fun endAt(): LocalTime = id.endAt
+    fun endAt(): LocalDateTime = id.endAt
     
     companion object {
         private const val MIN_PRICE = 1000
@@ -47,37 +41,33 @@ class Screening {
     }
 }
 
-class ID {
-    val title: String
-    val startAt: LocalTime
-    val endAt: LocalTime
-    
-    constructor(title: String, startAt: LocalDateTime, time: PlayTime) {
-        this.title = title(title)
-        this.startAt = startAt(startAt)
-        this.endAt = endAt(startAt, time)
-    }
+data class ID(
+    val title: String,
+    val startAt: LocalDateTime,
+    val endAt: LocalDateTime,
+) {
+    constructor(title: String, startAt: LocalDateTime, time: PlayTime) : this(title(title), startAt(startAt), endAt(startAt, time))
     
     companion object {
         private fun title(title: String): String = title.ifBlank { throw InvalidTitleException(title) }
         
-        private fun startAt(startAt: LocalDateTime): LocalTime = 
+        private fun startAt(startAt: LocalDateTime): LocalDateTime = 
             if (startAt.isBefore(LocalDateTime.now().plusHours(24)))
                 throw InvalidStartAtException(startAt)
-            else startAt.toLocalTime()
+            else startAt
 
-        private fun endAt(startAt: LocalTime, endAt: LocalTime): LocalTime =
+        private fun endAt(startAt: LocalDateTime, endAt: LocalDateTime): LocalDateTime =
             if (endAt.isBefore(startAt))
                 throw InvalidEndAtException(startAt, endAt)
             else endAt
         
-        private fun endAt(startAt: LocalDateTime, time: PlayTime): LocalTime = 
+        private fun endAt(startAt: LocalDateTime, time: PlayTime): LocalDateTime = 
             endAt(startAt(startAt), startAt(startAt) + time)
     }
 }
 
-operator fun LocalTime.plus(playTime: PlayTime): LocalTime {
-    val time = playTime.time.toLong()
+operator fun LocalDateTime.plus(playTime: PlayTime): LocalDateTime {
+    val time = playTime.time
     return when(playTime.unit) {
         TimeUnit.HOURS -> this.plusHours(time)
         TimeUnit.MINUTES -> this.plusMinutes(time)

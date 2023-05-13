@@ -4,6 +4,8 @@ import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-abstract class MovieRepository {
-    abstract fun findById(id: Long): Optional<Movie>
+class MovieRepository {
+    fun findById(id: Long): Optional<Movie> = Optional.empty()
+    
+    fun save(movie: Movie) = movie
 }

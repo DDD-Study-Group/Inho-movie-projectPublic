@@ -34,6 +34,9 @@ class DiscountControllerIntegrationTest : IntegrationTest() {
     @MockkBean(relaxed = true)
     private lateinit var service: CreateDiscountService
 
+    @MockkBean(relaxed = true)
+    private lateinit var repository: DiscountRepository
+
     @DisplayName("할인을 등록할 수 있다.")
     @ParameterizedTest
     @MethodSource("createSet")
@@ -51,9 +54,7 @@ class DiscountControllerIntegrationTest : IntegrationTest() {
             .andExpect(redirectedUrl("/discount/${discount.id()}"))
             .andDo(MockMvcResultHandlers.print())
     }
-
     
-
     @DisplayName("할인 순서가 0 이하이거나 할인 퍼센트가 0% 이하이거나 101% 이상 또는 할인 금액이 1000원 미만이면 할인을 등록할 수 없다")
     @ParameterizedTest
     @MethodSource("invalidRequest")

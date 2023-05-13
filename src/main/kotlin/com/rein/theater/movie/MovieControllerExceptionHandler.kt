@@ -20,6 +20,11 @@ class MovieControllerExceptionHandler {
         return ResponseEntity.badRequest().build<Any>()
     }
 
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun illegalArgumentException(iae: IllegalArgumentException): ResponseEntity<*> {
+        return ResponseEntity.badRequest().build<Any>()
+    }
+
     @ExceptionHandler(AlreadyRegisteredMovieException::class)
     fun alreadyRegisteredMovieException(arme: AlreadyRegisteredMovieException): ResponseEntity<*> {
         return ResponseEntity.status(HttpStatus.CONFLICT).build<Any>()

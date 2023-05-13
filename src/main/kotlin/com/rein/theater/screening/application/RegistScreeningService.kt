@@ -2,6 +2,7 @@ package com.rein.theater.screening.application
 
 import com.rein.theater.movie.domain.Movie
 import com.rein.theater.movie.domain.MovieRepository
+import com.rein.theater.screening.domain.AlreadyRegisteredScreeningException
 import com.rein.theater.screening.domain.InvalidScreeningArgumentException
 import com.rein.theater.screening.domain.Screening
 import com.rein.theater.screening.domain.ScreeningRepository
@@ -24,9 +25,15 @@ class RegistScreeningService constructor(
         throw isa
     } catch(nee: NotExistMovieException) {
         throw nee
+    } catch(arse: AlreadyRegisteredScreeningException) {
+        throw arse
     } catch (unknown: Exception) {
         throw FailedToRegistScreeningException(request)
     }
 
-    private fun findMovie(id: Long): Movie = movieRepository.findById(id).orElseThrow { NotExistMovieException(id) }
+    private fun findMovie(id: Long): Movie {
+        val movie = movieRepository.findById(id)
+        if (movie.isPresent) return movie.get()
+        throw NotExistMovieException(id)
+    }
 }

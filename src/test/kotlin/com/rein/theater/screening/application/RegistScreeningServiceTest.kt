@@ -9,6 +9,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.*
@@ -57,6 +58,16 @@ class RegistScreeningServiceTest {
         every { movieRepository.findById(allAny()) } returns Optional.empty()
 
         assertThatThrownBy { cut.regist(request) }.isExactlyInstanceOf(NotExistMovieException::class.java)
+    }
+
+    @DisplayName("이미 등록된 상영이 있다면 상영을 등록할 수 없다.")
+    @Test
+    fun regist_when_already_exist() {
+        val request = request(NOW.plusDays(3), 10000, 100)
+        every { movieRepository.findById(allAny()) } returns Optional.of(Movie("title", PlayTime.minutes(120)))
+        every { screeningRepository.save(allAny()) } throws AlreadyRegisteredScreeningException(mockk<ID>())
+        
+        assertThatThrownBy { cut.regist(request) }.isExactlyInstanceOf(AlreadyRegisteredScreeningException::class.java)
     }
 
     @Test

@@ -2,8 +2,8 @@ package com.rein.theater.screening
 
 import com.rein.theater.screening.application.RegistScreeningService
 import com.rein.theater.screening.application.SearchScreeningService
-import com.rein.theater.screening.view.RegistScreeningRequest
 import com.rein.theater.screening.view.DailyScheduleResponse
+import com.rein.theater.screening.view.RegistScreeningRequest
 import com.rein.theater.screening.view.ScheduleByMovieResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
@@ -16,13 +16,13 @@ import java.time.LocalDate
 @RequestMapping("/screening")
 class ScreeningController {
     @Autowired
-    private lateinit var register: RegistScreeningService
+    private lateinit var registScreeningService: RegistScreeningService
     @Autowired
     private lateinit var scheduler: SearchScreeningService
     
     @PostMapping(produces = ["application/json"])
     fun regist(@RequestBody request: RegistScreeningRequest): ResponseEntity<Any> {
-        register.regist(request)
+        registScreeningService.regist(request)
         return ResponseEntity.status(HttpStatus.CREATED).build()
     }
     

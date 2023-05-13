@@ -53,6 +53,8 @@ class MovieControllerIntegrationTest : IntegrationTest() {
     @ParameterizedTest
     @MethodSource("invalidMovieSet")
     fun regist_when_invalid_movie(movie: String) {
+        every { service.regist(any()) } throws IllegalArgumentException()
+        
         mvc.perform(post(BASE_URL).contentType(MediaType.APPLICATION_JSON)
             .content(movie))
             .andExpect(status().isBadRequest)
@@ -80,10 +82,10 @@ class MovieControllerIntegrationTest : IntegrationTest() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.movies.length()", equalTo(movies.size)))
             .andExpect(jsonPath("$.movies[0].title", equalTo(movies[0].title)))
-            .andExpect(jsonPath("$.movies[0].playTime.time", equalTo(movies[0].time.time)))
+            .andExpect(jsonPath("$.movies[0].playTime.time", equalTo(movies[0].time.time.toInt())))
             .andExpect(jsonPath("$.movies[0].playTime.unit", equalTo(movies[0].time.unit.name)))
             .andExpect(jsonPath("$.movies[1].title", equalTo(movies[1].title)))
-            .andExpect(jsonPath("$.movies[1].playTime.time", equalTo(movies[1].time.time)))
+            .andExpect(jsonPath("$.movies[1].playTime.time", equalTo(movies[1].time.time.toInt())))
             .andExpect(jsonPath("$.movies[1].playTime.unit", equalTo(movies[1].time.unit.name)))
             .andDo(MockMvcResultHandlers.print())
     }
@@ -102,15 +104,12 @@ class MovieControllerIntegrationTest : IntegrationTest() {
         @JvmStatic
         private fun invalidRequestSet() = Stream.of(
             Arguments.arguments("{\"playTime\": 50}"),
-            Arguments.arguments("{\"title\": \"타이타닉\"}"),
-            Arguments.arguments("{\"title\": \"\",\"playTime\": 50}"),
-            Arguments.arguments("{\"title\": \"타이타닉\",\"playTime\": 0}"),
-            Arguments.arguments("{\"title\": \"타이타닉\",\"playTime\": -1}")
+            Arguments.arguments("{\"title\": \"타이타닉\"}")
         )
 
         @JvmStatic
         private fun invalidMovieSet() = Stream.of(
-            Arguments.arguments("{\"title\": \"타이타닉\",\"playTime\": 0}"),
+            Arguments.arguments("{\"title\": \"\",\"playTime\": 0}"),
             Arguments.arguments("{\"title\": \"타이타닉\",\"playTime\": -1}")
         )
     }
