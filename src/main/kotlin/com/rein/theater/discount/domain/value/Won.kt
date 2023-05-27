@@ -20,6 +20,14 @@ class Won(value: Int) {
     
     operator fun times(percent: Percent): Won = Won((value * percent.rate()).toInt())
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Won
+        return value == other.value
+    }
+    
     companion object {
         private const val MIN = 0
         private val ZERO = Won(MIN)

@@ -23,6 +23,7 @@ import java.time.LocalDateTime
 import java.util.*
 import java.util.stream.Stream
 
+@DisplayName("상영 Application 테스트")
 @ExtendWith(MockKExtension::class)
 class RegistScreeningServiceTest {
     @RelaxedMockK
@@ -41,7 +42,7 @@ class RegistScreeningServiceTest {
         with(cut.regist(request)) { assertThat(this).isEqualTo(expected) }
     }
 
-    @DisplayName("시작시간이 현재시간 기준 24시간 이후가 아니거나 예매금액이 1000원 미만이거나 예매 티켓수가 1장 미만이라면 상영등록 할 수 없다.")
+    @DisplayName("시작시간이 현재시간 기준 2일 이후가 아니거나 예매금액이 1000원 미만이거나 예매 티켓수가 1장 미만이라면 상영등록 할 수 없다.")
     @ParameterizedTest
     @MethodSource("invalidArgs")
     fun regist_when_invalid_parameters(request: RegistScreeningRequest, expected: Class<InvalidScreeningArgumentException>) {
