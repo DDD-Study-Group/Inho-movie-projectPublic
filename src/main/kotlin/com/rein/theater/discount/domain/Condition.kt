@@ -14,7 +14,7 @@ class Condition {
     
     constructor(request: DiscountConditionRequest) : this(request.date!!, request.order!!)
     
-    fun match(order: Int): Boolean = this.order == order
+    fun match(date: LocalDate, order: Int): Boolean = this.date == date && this.order == order
 
     fun regist(): Condition {
         if (date.isBefore(LocalDate.now().plusDays(1))) throw InvalidDiscountDateException(date)

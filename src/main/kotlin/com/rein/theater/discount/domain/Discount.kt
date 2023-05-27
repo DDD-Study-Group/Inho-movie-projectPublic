@@ -15,9 +15,9 @@ class Discount(val condition: Condition, val policy: Policy) {
 
     fun regist(): Discount = Discount(condition.regist(), policy.regist())
     
-    fun paidAmount(order: Int, reserveAmount: Won): Won = 
-        if (condition.match(order)) policy.apply(reserveAmount)
-        else reserveAmount
+    fun paidAmount(date: LocalDate, order: Int, ticketPrice: Won): Won = 
+        if (condition.match(date, order)) policy.apply(ticketPrice)
+        else ticketPrice
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -27,7 +27,7 @@ class ScreeningTest {
         }
     }
 
-    @DisplayName("상영 시작시간이 등록일보다 24시간 이후가 아니거나 티켓수가 1장 미만이거나 예매금액이 1000원 미만이면 상영을 등록할 수 없다.")
+    @DisplayName("상영 시작시간이 등록일보다 2일 이후가 아니거나 티켓수가 1장 미만이거나 예매금액이 1000원 미만이면 상영을 등록할 수 없다.")
     @ParameterizedTest
     @MethodSource("invalidScreenings")
     fun create_when_invalid_screening(startAt: LocalDateTime, ticketCount: Int, price: Won, expected: Class<InvalidScreeningArgumentException>) {

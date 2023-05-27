@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -14,8 +15,15 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Stream
 
-@DisplayName("할인 도메인 테스트")
+@DisplayName("할인 Domain 테스트")
 class DiscountTest {
+    @DisplayName("할인 적용대상이면 할인금액을 제외한 금액을 지불하고, 할인 적용대상이 아니라면 할인금액을 제외하지 않는다.")
+    @ParameterizedTest
+    @MethodSource("paidSet")
+    fun paidAmount(discount: Discount, date: LocalDate, order: Int, price: Won, expected: Won) {
+        assertThat(discount.paidAmount(date, order, price)).isEqualTo(expected)
+    }
+
     @DisplayName("할인조건과 할인정책이 유효하다면 할인을 등록할 수 있다.")
     @ParameterizedTest
     @MethodSource("registSet")
@@ -56,6 +64,40 @@ class DiscountTest {
     companion object {
         private val DATE = LocalDate.now().plusDays(3)
         private val FORMAT = DateTimeFormatter.BASIC_ISO_DATE
+        
+        @JvmStatic
+        private fun paidSet() = Stream.of(
+            Arguments.arguments(
+                Discount(Condition(DATE, 3), AmountPolicy(Won(3000))),
+                DATE, 3, Won(10000),
+                Won(7000)
+            ),
+            Arguments.arguments(
+                Discount(Condition(DATE, 3), AmountPolicy(Won(3000))),
+                DATE.plusDays(1), 3, Won(10000),
+                Won(10000)
+            ),
+            Arguments.arguments(
+                Discount(Condition(DATE, 3), AmountPolicy(Won(3000))),
+                DATE, 2, Won(10000),
+                Won(10000)
+            ),
+            Arguments.arguments(
+                Discount(Condition(DATE, 1), PercentPolicy(Percent(20))),
+                DATE, 1, Won(10000),
+                Won(8000)
+            ),
+            Arguments.arguments(
+                Discount(Condition(DATE, 1), PercentPolicy(Percent(20))),
+                DATE, 2, Won(10000),
+                Won(10000)
+            ),
+            Arguments.arguments(
+                Discount(Condition(DATE, 1), PercentPolicy(Percent(20))),
+                DATE.minusDays(1), 1, Won(10000),
+                Won(10000)
+            )
+        )
         
         @JvmStatic 
         private fun idSet() = Stream.of(
