@@ -47,7 +47,9 @@ class CreateDiscountServiceTest {
     companion object {
         private val DISCOUNT = discount()
         
-        private fun discount(): Discount =
-            Discount(Condition(LocalDate.now().plusDays(10), 3), PercentPolicy(Percent(10)))
+        private fun discount(condition: Condition = condition()): Discount =
+            Discount(condition, PercentPolicy(Percent(10)))
+        
+        private fun condition(date: LocalDate = LocalDate.now().plusDays(10), order: Int = 3): Condition = Condition(date, order)
     }
 }

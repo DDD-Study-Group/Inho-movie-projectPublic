@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class Discount(val condition: Condition, val policy: Policy) {
+    
     fun id(): Int = Objects.hash(condition.date.format(DateTimeFormatter.BASIC_ISO_DATE), condition.order)
     
     fun date(): LocalDate = condition.date

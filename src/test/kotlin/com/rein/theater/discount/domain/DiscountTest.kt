@@ -3,17 +3,15 @@ package com.rein.theater.discount.domain
 import com.rein.theater.discount.domain.value.Percent
 import com.rein.theater.discount.domain.value.Won
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
-
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Accesslog.FORMAT
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Objects
+import java.util.*
 import java.util.stream.Stream
 
 class DiscountTest {
@@ -30,50 +28,65 @@ class DiscountTest {
     fun testEquals(discount: Discount, other: Discount, expected: Boolean) {
         assertThat(discount == other).isEqualTo(expected)
     }
-    
+
+    @DisplayName("할인 날짜가 현재보다 24시간 이후가 아니거나 순서가 1보다 작다면 할인을 등록할 수 없다.")
+    @ParameterizedTest
+    @MethodSource("invalidConditionSet")
+    fun create_when_invalid_discount_condition(date: LocalDate, order: Int, expected: Class<InvalidDiscountArgumentException>) {
+        assertThatThrownBy { Discount(Condition(date, order), PercentPolicy(Percent(10))) }.isExactlyInstanceOf(expected)
+    }
+
     companion object {
-        private val NOW = LocalDate.now()
+        private val DATE = LocalDate.now().plusDays(1)
         private val FORMAT = DateTimeFormatter.BASIC_ISO_DATE
         
         @JvmStatic 
         private fun idSet() = Stream.of(
-            Arguments.arguments(Condition(NOW, 3), PercentPolicy(Percent(10)), Objects.hash(NOW.format(FORMAT), 3)),
-            Arguments.arguments(Condition(NOW.plusDays(1), 2), AmountPolicy(Won(2000)), Objects.hash(NOW.plusDays(1).format(FORMAT), 2)),
-            Arguments.arguments(Condition(NOW, 1), PercentPolicy(Percent(5)), Objects.hash(NOW.format(FORMAT), 1))
+            Arguments.arguments(Condition(DATE, 3), PercentPolicy(Percent(10)), Objects.hash(DATE.format(FORMAT), 3)),
+            Arguments.arguments(Condition(DATE.plusDays(1), 2), AmountPolicy(Won(2000)), Objects.hash(DATE.plusDays(1).format(FORMAT), 2)),
+            Arguments.arguments(Condition(DATE, 1), PercentPolicy(Percent(5)), Objects.hash(DATE.format(FORMAT), 1))
         )
         
         @JvmStatic
         private fun equalsSet() = Stream.of(
             Arguments.arguments(
-                Discount(Condition(NOW, 3), PercentPolicy(Percent(10))),
-                Discount(Condition(NOW, 3), AmountPolicy(Won(10))),
+                Discount(Condition(DATE, 3), PercentPolicy(Percent(10))),
+                Discount(Condition(DATE, 3), AmountPolicy(Won(10))),
                 true
             ),
             Arguments.arguments(
-                Discount(Condition(NOW, 3), PercentPolicy(Percent(10))),
-                Discount(Condition(NOW, 2), PercentPolicy(Percent(10))),
+                Discount(Condition(DATE, 3), PercentPolicy(Percent(10))),
+                Discount(Condition(DATE, 2), PercentPolicy(Percent(10))),
                 false
             ),
             Arguments.arguments(
-                Discount(Condition(NOW, 3), PercentPolicy(Percent(10))),
-                Discount(Condition(NOW.plusDays(1), 3), PercentPolicy(Percent(10))),
+                Discount(Condition(DATE, 3), PercentPolicy(Percent(10))),
+                Discount(Condition(DATE.plusDays(1), 3), PercentPolicy(Percent(10))),
                 false
             ),
             Arguments.arguments(
-                Discount(Condition(NOW, 3), AmountPolicy(Won(1000))),
-                Discount(Condition(NOW, 2), AmountPolicy(Won(1000))),
+                Discount(Condition(DATE, 3), AmountPolicy(Won(1000))),
+                Discount(Condition(DATE, 2), AmountPolicy(Won(1000))),
                 false
             ),
             Arguments.arguments(
-                Discount(Condition(NOW, 3), AmountPolicy(Won(1000))),
-                Discount(Condition(NOW.plusDays(1), 3), AmountPolicy(Won(1000))),
+                Discount(Condition(DATE, 3), AmountPolicy(Won(1000))),
+                Discount(Condition(DATE.plusDays(1), 3), AmountPolicy(Won(1000))),
                 false
             ),
             Arguments.arguments(
-                Discount(Condition(NOW, 3), AmountPolicy(Won(1000))),
-                Discount(Condition(NOW, 3), AmountPolicy(Won(1000))),
+                Discount(Condition(DATE, 3), AmountPolicy(Won(1000))),
+                Discount(Condition(DATE, 3), AmountPolicy(Won(1000))),
                 true
             )
+        )
+
+        @JvmStatic
+        private fun invalidConditionSet() = Stream.of(
+            Arguments.arguments(LocalDate.now(), 1, InvalidDiscountDateException::class.java),
+            Arguments.arguments(LocalDate.now().minusDays(1), 1, InvalidDiscountDateException::class.java),
+            Arguments.arguments(LocalDate.now().plusDays(1), 0, InvalidDiscountOrderException::class.java),
+            Arguments.arguments(LocalDate.now().plusDays(1), -1, InvalidDiscountOrderException::class.java)
         )
     }
 }

@@ -8,6 +8,9 @@ class Condition {
     val order: Int
     
     constructor(date: LocalDate, order: Int) {
+        if (LocalDate.now().plusDays(1).isAfter(date)) throw InvalidDiscountDateException(date)
+        if (order < 1) throw InvalidDiscountOrderException(order)
+        
         this.date = date
         this.order = order
     }

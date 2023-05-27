@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service
 class CreateDiscountService @Autowired constructor(private val repository: DiscountRepository) {
     private val logger = LoggerFactory.getLogger(CreateDiscountService::class.java)
     fun create(discount: Discount): Discount = try { 
-        // TODO 중복 판단 AlreadyCreatedDiscountException
-        // TODO InvalidDiscountDateException
         repository.save(discount) 
     } catch (arse: AlreadyRegisteredScreeningException) {
         logger.error(arse.message)
