@@ -1,5 +1,6 @@
 package com.rein.theater.screening.domain
 
+import com.rein.theater.discount.domain.Discount
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -12,6 +13,8 @@ class AlreadyRegisteredScreeningException : RuntimeException {
     )
     
     constructor(id: ID) : super("Already a screening registered. id=$id")
+    
+    constructor(discount: Discount) : super("Already a screening registered. id=${discount.id()}, date=${discount.date()}, order=${discount.order()}")
 }
     
 
