@@ -14,7 +14,17 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Stream
 
+@DisplayName("할인 도메인 테스트")
 class DiscountTest {
+    @DisplayName("할인조건과 할인정책이 유효하다면 할인을 등록할 수 있다.")
+    @ParameterizedTest
+    @MethodSource("registSet")
+    fun regist(condition: Condition, policy: Policy) {
+        val discount = Discount(condition, policy)
+        
+        assertThat(discount.regist()).isEqualTo(discount)
+    }
+
     @DisplayName("할인의 ID 는 할인날짜와 순서의 hash 값이다.")
     @ParameterizedTest
     @MethodSource("idSet")
@@ -29,15 +39,22 @@ class DiscountTest {
         assertThat(discount == other).isEqualTo(expected)
     }
 
-    @DisplayName("할인 날짜가 현재보다 24시간 이후가 아니거나 순서가 1보다 작다면 할인을 등록할 수 없다.")
+    @DisplayName("할인 날짜가 현재보다 2일 이후가 아니거나 순서가 1보다 작다면 할인을 등록할 수 없다.")
     @ParameterizedTest
     @MethodSource("invalidConditionSet")
-    fun create_when_invalid_discount_condition(date: LocalDate, order: Int, expected: Class<InvalidDiscountArgumentException>) {
-        assertThatThrownBy { Discount(Condition(date, order), PercentPolicy(Percent(10))) }.isExactlyInstanceOf(expected)
+    fun regist_when_invalid_discount_condition(date: LocalDate, order: Int, expected: Class<InvalidDiscountArgumentException>) {
+        assertThatThrownBy { Discount(Condition(date, order), PercentPolicy(Percent(10))).regist() }.isExactlyInstanceOf(expected)
+    }
+
+    @DisplayName("할인금액이 1000원 미만이거나, 할인비율이 1% 미만이면 할인을 등록할 수 없다.")
+    @ParameterizedTest
+    @MethodSource("invalidPolicySet")
+    fun regist_when_invalid_discount_policy(condition: Condition, policy: Policy, expected: Class<InvalidDiscountArgumentException>) {
+        assertThatThrownBy { Discount(condition, policy).regist() }.isExactlyInstanceOf(expected)
     }
 
     companion object {
-        private val DATE = LocalDate.now().plusDays(1)
+        private val DATE = LocalDate.now().plusDays(3)
         private val FORMAT = DateTimeFormatter.BASIC_ISO_DATE
         
         @JvmStatic 
@@ -85,8 +102,21 @@ class DiscountTest {
         private fun invalidConditionSet() = Stream.of(
             Arguments.arguments(LocalDate.now(), 1, InvalidDiscountDateException::class.java),
             Arguments.arguments(LocalDate.now().minusDays(1), 1, InvalidDiscountDateException::class.java),
-            Arguments.arguments(LocalDate.now().plusDays(1), 0, InvalidDiscountOrderException::class.java),
-            Arguments.arguments(LocalDate.now().plusDays(1), -1, InvalidDiscountOrderException::class.java)
+            Arguments.arguments(LocalDate.now().plusDays(2), 0, InvalidDiscountOrderException::class.java),
+            Arguments.arguments(LocalDate.now().plusDays(2), -1, InvalidDiscountOrderException::class.java)
+        )
+        
+        @JvmStatic
+        private fun invalidPolicySet() = Stream.of(
+            Arguments.arguments(Condition(DATE, 3), AmountPolicy(Won(999)), InvalidDiscountAmountException::class.java),
+            Arguments.arguments(Condition(DATE, 1), AmountPolicy(Won(0)), InvalidDiscountAmountException::class.java),
+            Arguments.arguments(Condition(DATE, 1), PercentPolicy(0), InvalidDiscountPercentException::class.java)
+        )
+        
+        @JvmStatic
+        private fun registSet() = Stream.of(
+            Arguments.arguments(Condition(DATE, 3), PercentPolicy(Percent(10))),
+            Arguments.arguments(Condition(DATE.plusMonths(1), 2), AmountPolicy(Won(1000)))
         )
     }
 }

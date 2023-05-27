@@ -11,11 +11,11 @@ import java.util.stream.Stream
 
 @DisplayName("할인 조건 테스트")
 class ConditionTest {
-    @DisplayName("할인 날짜가 현재보다 24시간 이후가 아니거나 순서가 1보다 작다면 예외를 발생시킨다.")
+    @DisplayName("할인 날짜가 현재보다 24시간 이후가 아니거나 순서가 1보다 작다면 할인 조건을 등록할 수 없다.")
     @ParameterizedTest
     @MethodSource("invalidConditionSet")
-    fun create_when_invalid_arguments(date: LocalDate, order: Int, expected: Class<InvalidDiscountArgumentException>) {
-        assertThatThrownBy { Condition(date, order) }.isExactlyInstanceOf(expected)
+    fun regist_when_invalid_arguments(date: LocalDate, order: Int, expected: Class<InvalidDiscountArgumentException>) {
+        assertThatThrownBy { Condition(date, order).regist() }.isExactlyInstanceOf(expected)
     }
     
     companion object {
